@@ -49,6 +49,8 @@ namespace XmlLit {
       element.line = ((IXmlLineInfo)reader).LineNumber;
       if (reader.IsEmptyElement == false) {
         element.LoadNode(reader);
+      } else {
+        element.ReadAttributes(reader);
       }
       Children.Add(element);
     }

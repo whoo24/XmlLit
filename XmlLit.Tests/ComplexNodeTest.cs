@@ -9,17 +9,12 @@ namespace XmlLit.Tests {
   public class ComplexNodeTest {
     public class MapRecord {
       public string renderorder;
-      public int height;
-      public int width;
 
       public class Tileset {
         public int firstgid;
-        public string name;
 
         public class Image {
           public string source;
-          public int width;
-          public int height;
         }
         public Image image = new Image();
       }
@@ -46,10 +41,10 @@ namespace XmlLit.Tests {
     [TestMethod]
     public void ParseComplexDocument () {
       string data = @"<?xml version='1.0' encoding='utf-8'?>
-<map renderorder='right-down' width='22' height='29'>
- <tileset firstgid='1' name='hexagonTerrain_sheet_re'>
-  <image source='hexagonTerrain_sheet_re.png' width='1024' height='2048'/>
-  <tile id='13' probability='0'/>
+<map renderorder='right-down'>
+ <tileset firstgid='1'>
+  <image source='hexagonTerrain_sheet_re.png'/>
+  <tile id='13'/>
  </tileset>
  <layer name='Tile Layer 1' width='22' height='29'>
   <data>
@@ -62,18 +57,16 @@ namespace XmlLit.Tests {
       using (TextReader text_reader = new StringReader(data)) {
         XmlReader reader = XmlReader.Create(text_reader);
         Node.Load(reader, delegate (Node element) {
-          record.width = int.Parse(element["@width"].Value);
           record.renderorder = element["@renderorder"].Value;
           foreach (var tileset_element in element.GetElements("tileset")) {
             var tileset = new MapRecord.Tileset();
-            tileset.image.source = tileset_element["@source"].Value;
-            tileset.image.width = int.Parse(tileset_element["@width"].Value);
-            tileset.image.height = int.Parse(tileset_element["@height"].Value);
+            tileset.image.source = tileset_element["image"]["@source"].Value;
             record.tilesets.Add(tileset);
           }
         }, "map");
       }
-      Assert.AreEqual(22, record.width);
+      Assert.AreEqual("right-down", record.renderorder);
+      Assert.AreEqual("hexagonTerrain_sheet_re.png", record.tilesets[0].image.source);
     }
   }
 }
