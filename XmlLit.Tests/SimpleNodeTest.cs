@@ -39,10 +39,11 @@ namespace XmlLit.Tests {
           rows.Add(row);
         }, "data/row");
       }
-      Assert.AreEqual(2, rows.Count);
+      Assert.AreEqual(0, rows.Count);
     }
 
     [TestMethod]
+    [ExpectedException (typeof(System.Xml.XmlException))]
     public void ParseElements_UnclosedNode () {
       string data = @"<?xml version='1.0' encoding='utf-8'?>
 <data>
@@ -59,13 +60,37 @@ namespace XmlLit.Tests {
       List<Row> rows = new List<Row>();
       using (TextReader text_reader = new StringReader(data)) {
         XmlReader reader = XmlReader.Create(text_reader);
-        Node.Load(reader, delegate (Node element) {
-          Row row = new Row();
-          row.uid = int.Parse(element["uid"].Value);
-          row.id = element["id"].Value;
-          row.enable = bool.Parse(element["enable"].Value);
-          rows.Add(row);
-        }, "data/Row");
+        Node.Load(reader, delegate (Node element) { }, "data/Row");
+      }
+    }
+
+    [TestMethod]
+    public void ParseElements_UnclosedNode2 () {
+      string data = @"<?xml version='1.0' encoding='utf-8'?>
+<data>
+  <Row>
+    <uid>1</uid>
+    <id>A001</id>
+    <enable>True</enable>
+  </Row>
+  <Row>
+    <uid>2</uid>
+    <id>A002</id>
+    <enable>True</enable>
+  </Row>";
+      List<Row> rows = new List<Row>();
+      try {
+        using (TextReader text_reader = new StringReader(data)) {
+          XmlReader reader = XmlReader.Create(text_reader);
+          Node.Load(reader, delegate (Node element) {
+            Row row = new Row();
+            row.uid = int.Parse(element["uid"].Value);
+            row.id = element["id"].Value;
+            row.enable = bool.Parse(element["enable"].Value);
+            rows.Add(row);
+          }, "data/Row");
+        }
+      } catch (XmlException) {
       }
       Assert.AreEqual(2, rows.Count);
     }
@@ -113,8 +138,10 @@ namespace XmlLit.Tests {
           public int width;
           public int height;
         }
+
         public Image image = new Image();
       }
+
       public class Layer {
         public string name;
         public int width;

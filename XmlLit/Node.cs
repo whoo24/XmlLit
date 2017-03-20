@@ -108,6 +108,9 @@ namespace XmlLit {
             if (string.IsNullOrEmpty(node_path)) {
               node_path = reader.Name;
             }
+            if (pathlist.Count < cur_path.Count) {
+              break;
+            }
             if (pathlist[cur_path.Count - 1] != reader.Name) {
               break;
             }
