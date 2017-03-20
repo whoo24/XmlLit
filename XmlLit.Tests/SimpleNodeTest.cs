@@ -26,7 +26,8 @@ namespace XmlLit.Tests {
     <uid>2</uid>
     <id>A002</id>
     <enable>True</enable>
-  </Row>";
+  </Row>
+</data>";
       List<Row> rows = new List<Row>();
       using (TextReader text_reader = new StringReader(data)) {
         XmlReader reader = XmlReader.Create(text_reader);
